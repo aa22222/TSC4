@@ -1,7 +1,7 @@
 import { compileFunc } from "@ton-community/func-js";
 import fs from "fs";
 
-const task = 5;
+const task = 1;
 async function main() {
     const compileResult = await compileFunc({
         sources: {
