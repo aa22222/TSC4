@@ -21,6 +21,45 @@
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  return begin_cell().end_cell();
+  int fn = 0;
+  int vn = 0;
+  int m = flag;
+  while (m) {
+    m >>= 1;
+    fn += 1;
+  }
+  m = value;
+  while (m) {
+    vn += 1;
+    m >>= 1;
+  }
+
+  {-
+  Read N Bits where N is the length of the flag;
+  Check if flag == read;
+  Basically leftshift the input then add the new bit;
+  if flag == read, then flag = read new N bits;
+
+  int n = length(flag);
+  builder re = begin_cell(); // idk if new cell starts auto or if i have to manually make linked list
+  slice list = linked_list.begin_parse();
+  int cur = list~load_uint(n);
+  while(! at_end()){
+     if(cur == flag){
+      re.store(value, length(value));
+      cur = list~load_uint(n);
+     }
+     else{
+      re <<= 1;
+      if(re >= 2 ** n) // if largest bit is on
+        re -= 2 ** n
+        re.store(1, 1)
+      else 
+        re.store(0, 1);        
+      
+      re += list~load_uint(1);
+     }
+  }
+  -}
 }
 

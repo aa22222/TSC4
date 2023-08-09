@@ -16,7 +16,12 @@
   builder re = begin_cell().store_uint(0, 32);
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
-    cur = 65 + (cur - 65 + shift) % 26;
+    if(cur <= 90) {
+      cur = 65 + (cur - 65 + shift) % 26;
+    }
+    else {
+      cur = 97 + (cur - 97 + shift) % 26;
+    } 
     re~store_uint(cur, 8);
   }
   return re.end_cell();
@@ -30,7 +35,12 @@
   builder re = begin_cell().store_uint(0, 32);
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
-    cur = 65 + (cur - 39 - shift) % 26;
+    if(cur <= 90) {
+      cur = 65 + (cur - 65 - shift + 26) % 26;
+    }
+    else {
+      cur = 97 + (cur - 97 - shift + 26) % 26;
+    } 
     re~store_uint(cur, 8);
   }
   return re.end_cell();

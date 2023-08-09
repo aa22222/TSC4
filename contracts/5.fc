@@ -33,7 +33,6 @@
     next = cur + next;
     cur = temp;
   }
-  ;; t~tpush(cur);
 
   return t;
 }
