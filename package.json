@@ -1,0 +1,16 @@
+{
+  "name": "ton4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "assert": "^2.0.0",
+    "ton-contract-executor": "^0.7.0"
+  }
+}
