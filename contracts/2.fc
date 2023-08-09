@@ -8,14 +8,37 @@
   Matrix can be rectangular where matrixA must to be of size n*m & matrixB of size m*p.
   After calculating the result matrix, the function should return final result (as tuple).
 -}
+int tlen(tuple t) asm "TLEN";
+forall X -> X ind(tuple t, int k) asm (t k) "INDEXVAR";
 
 () recv_internal() {
 }
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
+  int n = tlen(matrixA);
+  int m = tlen(matrixA.first());
+  int p = tlen(matrixB.first());
   tuple re = empty_tuple();
-  
-  
+  int i = 0;
+  int j = 0;
+  int k = 0;
+  while(i < n){
+    tuple curT = empty_tuple();
+    while(j < p){
+      int cur = 0;
+      while(k < m){
+        cur += matrixA.ind(i).ind(k) * matrixB.ind(k).ind(j);
+        k += 1;
+      }
+      curT~tpush(cur);
+      k = 0;
+      j += 1;
+    }
+    re~tpush(curT);
+    j = 0;
+    i += 1;
+  }
+  return re;
 }
 
