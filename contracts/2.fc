@@ -14,6 +14,8 @@
 
 ;; testable
 (tuple) matrix_multiplier(tuple matrixA, tuple matrixB) method_id {
-  return null();
+  tuple re = empty_tuple();
+  
+  
 }
 
