@@ -10,6 +10,20 @@
 }
 
 ;; testable
+(cell) helper(int hash, cell tree){
+  if(hash == tree.cell_hash()) {
+    return tree;
+  }
+  slice c = tree.begin_parse();
+  repeat(c.slice_refs()){
+    cell next = c~load_ref();
+    cell k = helper(hash, next);
+    if(~ k.cell_null?()) {
+      return k;
+    }
+  }
+  return null();
+}
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
   if(hash == tree.cell_hash()) {
     return tree;
@@ -17,10 +31,8 @@
   slice c = tree.begin_parse();
   repeat(c.slice_refs()){
     cell next = c~load_ref();
-    cell k = find_branch_by_hash(hash, next);
-    ;; maybe can replace (k.cell_hash() == hash) with (~ k.cell_null?())
-    ;; Try it if desperate
-    if(k.cell_hash() == hash) {
+    cell k = helper(hash, next);
+    if(~ k.cell_null?()) {
       return k;
     }
   }

@@ -26,6 +26,8 @@ async function main() {
         .endCell()
     )
     .endCell()
+
+    console.log(beginCell().endCell().equals(beginCell().endCell()))
     
     const hash = BigInt('0x' + cellToFind.hash().toString("hex"));
     let re = await contract.invokeGetMethod('find_branch_by_hash', [stackInt(hash), stackCell(root)]);
