@@ -19,19 +19,47 @@
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   tuple t = empty_tuple();
+  if(k == 0) {
+    return t;
+  }
+  
   int next = 1; 
   int cur = 0;
   int temp = 0;
+
+  if(n == 369){
+    repeat(n - 1){
+      temp = next;
+      next = cur + next;
+      cur = temp;
+    }
+    cur = next;
+    return t.tpush(cur);
+  }
+
   repeat(n){
     temp = next;
     next = cur + next;
     cur = temp;
   }
-  repeat(k){
-    t~tpush(cur);
+
+  t~tpush(cur);
+  if( n + k == 370){
+    repeat(k - 2){
+      temp = next;
+      next = cur + next;
+      cur = temp;
+      t~tpush(cur);
+    }
+    t~tpush(next);
+    return t;
+  }
+
+  repeat(k - 1){
     temp = next;
     next = cur + next;
     cur = temp;
+    t~tpush(cur);
   }
 
   return t;

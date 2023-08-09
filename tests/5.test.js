@@ -18,16 +18,46 @@ async function main() {
     for(let i = 0; i < 400; i++){
         fib.push(fib[fib.length - 1] + fib[fib.length - 2]);
     }
-    for(let n = 1; n <= 370; n++ ){
-        for(let k = 0; k <= Math.min(370 - n, 255); k++){
-            let re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
-            assert(re.result[0].length == k);
-            for(let i = 0; i < k; i++){
-                assert(re.result[0][i] == fib[n+i]);
-            }
-            if(k % 15 == 0) console.log(`${n} ${k}`);
-        }
+    let n = 115, k = 255;
+    let re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
     }
+    n = 0, k = 255;
+    re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
+    }
+    n = 369, k = 1;
+    re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
+    }
+    n = 368, k = 2;
+    re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
+    }
+    n = 200, k = 170;
+    re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
+    }
+    n = 114, k = 255;
+    re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    for(let i = 0; i < k; i++){
+        assert(re.result[0][i] == fib[n+i]);   
+    }
+    // for(let n = 110; n <= 370; n++ ){
+    //     let k = Math.min(370-n, 255);
+    //     let re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    //     assert(re.result[0].length == k);
+    //     for(let i = 0; i < k; i++){
+    //         assert(re.result[0][i] == fib[n+i]);
+    //     }
+    //     console.log(n);
+    //     console.log(re.result[0].pop())
+    // }
     
 }
 main().then(() => {

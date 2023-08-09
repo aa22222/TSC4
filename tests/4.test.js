@@ -13,7 +13,7 @@ function readSimpleMessageCell(cell){
 function caeserCipher(str, amount) {
     // Wrap the amount
     if (amount < 0) {
-      return caesarShift(str, amount + 26);
+      return caeserCipher(str, amount + 26);
     }
   
     // Make an output variable
@@ -55,10 +55,10 @@ async function main() {
         new Cell(),
         { debug: true }
     )
-    const msg = "TewruhwehfiuNHIOUEGFioueoIUWHROIEUFboiauhdseFUIEAEHOfiUHFoieUaushd";
+    const msg = "TewruhwehfiuNHIOUEGFioueoZZZzzzIUWHROIEUFboiauhdseFUIEAEHOfiUHFoieUaushd";
     const cell = simpleMessageCell(msg);
 
-    for(let i = 0; i < 26; i++){
+    for(let i = -26; i <= 26; i++){
         let re = await contract.invokeGetMethod("caesar_cipher_encrypt", [stackInt(i), stackCell(cell)]);
         console.log(readSimpleMessageCell(re.result[0]))
         console.log(caeserCipher(msg, i))
