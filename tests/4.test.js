@@ -8,7 +8,7 @@ function simpleMessageCell(msg){
     return beginCell().storeUint(0, 32).storeStringTail(msg).endCell()
 }
 function readSimpleMessageCell(cell){
-    return cell.asSlice().skip(32).loadStringTail();
+    return cell.asSlice().loadStringTail();
 }
 function caeserCipher(str, amount) {
     // Wrap the amount
@@ -55,16 +55,19 @@ async function main() {
         new Cell(),
         { debug: true }
     )
-    const msg = "TewruhwehfiuNHIOUEGFioueoZZZzzzIUWHROIEUFboiauhdseFUIEAEHOfiUHFoieUaushd";
+    const msg = "abcde_+:{\"fghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     const cell = simpleMessageCell(msg);
 
-    for(let i = -26; i <= 26; i++){
+    for(let i = 0; i <= 50; i++){
         let re = await contract.invokeGetMethod("caesar_cipher_encrypt", [stackInt(i), stackCell(cell)]);
         console.log(readSimpleMessageCell(re.result[0]))
         console.log(caeserCipher(msg, i))
         assert(readSimpleMessageCell(re.result[0]) == caeserCipher(msg, i));
-        let re2 = await contract.invokeGetMethod("caesar_cipher_decrypt", [stackInt(i), stackCell(re.result[0])]);
+        let re2 = await contract.invokeGetMethod("caesar_cipher_decrypt", [stackInt(i), stackCell(simpleMessageCell(caeserCipher(msg, i)))]);
         console.log(readSimpleMessageCell(re2.result[0]))
+        console.log(re2.result[0])
+        console.log(re.result[0])
+        
         console.log(msg)
         assert(readSimpleMessageCell(re2.result[0]) == msg);
         console.log(i);
