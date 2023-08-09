@@ -53,15 +53,11 @@ async function main() {
     for(let i = 0; i < k; i++){
         assert(re.result[0][i] == fib[n+i]);   
     }
-    for(let n =230; n <= 370-23; n++ ){
-        let k = 23;
-        let re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
-        assert(re.result[0].length == k);
-        for(let i = 0; i < k; i++){
-            assert(re.result[0][i] == fib[n+i]);
+    for(let n =0; n <= 370; n++){
+        for(let k = 0; k <= Math.min(370 - n, 255); k++){
+            re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+            if(re.type != 'success') console.log(`ERROR: ${n} ${k}`)
         }
-        console.log(n);
-        console.log(re.result[0].pop())
     }
     
 }

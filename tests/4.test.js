@@ -8,7 +8,7 @@ function simpleMessageCell(msg){
     return beginCell().storeUint(0, 32).storeStringTail(msg).endCell()
 }
 function readSimpleMessageCell(cell){
-    return cell.asSlice().loadStringTail();
+    return cell.asSlice().skip(32).loadStringTail();
 }
 function caeserCipher(str, amount) {
     // Wrap the amount

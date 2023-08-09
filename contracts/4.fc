@@ -13,7 +13,7 @@
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   slice c = text.begin_parse().skip_bits(32);  
   shift = ((shift % 26) + 26) % 26;
-  builder re = begin_cell();
+  builder re = begin_cell().store_uint(0, 32);
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
     if((65 <= cur) & (cur <= 90)) {
@@ -34,7 +34,7 @@
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
   slice c = text.begin_parse().skip_bits(32);  
   shift = ((shift % 26) + 26) % 26;
-  builder re = begin_cell();
+  builder re = begin_cell().store_uint(0, 32);
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
     if((65 <= cur) & (cur <= 90)) {

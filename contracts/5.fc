@@ -33,7 +33,8 @@
       next = cur + next;
       cur = temp;
     }
-    return t.tpush(next);
+    t~tpush(next);
+    return t;
   }
 
   repeat(n){
