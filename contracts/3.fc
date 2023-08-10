@@ -18,6 +18,7 @@
 
 () recv_internal() {
 }
+
 (slice, (int, int)) read(slice s, int n){
   int c = s.slice_bits();
   int re = 0;
@@ -55,25 +56,32 @@
     return (begin_cell().store_uint(x, n), (builders));
   }
   return (b.store_uint(x, n), (builders));
-  
-
 }
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {  
   int n = 0;
+  int vn = 0;
   int m = flag;
-  tuple builders = null();
   while(m){
     n += 1;
     m >>= 1;
   }
+  m = value;
+  while(m){
+    vn += 1;
+    m >>= 1;
+  }
+  
+
+  tuple builders = null();
   slice s = linked_list.begin_parse();
   builder re = begin_cell();
   (int cur, int last) = s~read(n);
   while(~ s.slice_empty?()){
  
     if(cur == flag){
-      builders = re~write(value, n, builders);
+      builders = re~write(value, vn, builders);
       (cur, last) = s~read(n);
     }
     else {
@@ -88,16 +96,14 @@
         builders = re~write(0, 1, builders);
       }
     }
-
-    
   }
-  
   if(cur == flag){
-    builders = re~write(value, n, builders);
+    builders = re~write(value, vn, builders);
   }
   else {
     builders = re~write(cur, last, builders);
   }
+
   cell last = re.end_cell();
   while(~ builders.null?()){
     builder b = builders~list_next();

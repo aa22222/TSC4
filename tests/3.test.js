@@ -28,32 +28,27 @@ async function main() {
         new Cell(),
         { debug: true }
     )
-    let flag = "101010", value = "000011";
-    let message = flag.repeat(300);
+    let flag = "10101010101011101010", value = "1";
+    let message = (18n).toString(2).repeat(300);
     let correct = message.replaceAll(flag, value);
     let g = messageCell(message);
-    console.log(message.length )
+    
+    console.log(message.length)
     let re = await contract.invokeGetMethod("find_and_replace", 
         [
          stackInt(BigInt('0b' + flag)), 
          stackInt(BigInt('0b' + value)), 
          stackCell(g)
         ]);
-    // const c = re.debugLogs.map((a) => a.replace('#DEBUG#: s0 = ', ''));
-    // const d = [];
-    // for(let i = 0 ; i*2 < c.length; i++) d.push(`${c[2*i]} ${parseInt(c[2*i+1]).toString(2)}`);
-    // console.log(d);
     let r = re.result[0];
     correct = messageCell(correct);
-    console.log(r.bits);
-    console.log(messageCell(correct).bits)
-    assert(r.bits.equals(correct.bits));
     console.log(r.bits); console.log(correct.bits);
+    assert(r.bits.equals(correct.bits));
     while(r.asSlice().remainingRefs){
         r = r.asSlice().loadRef();
         correct = correct.asSlice().loadRef();
-        assert(r.bits.equals(correct.bits));
         console.log(r.bits); console.log(correct.bits);
+        assert(r.bits.equals(correct.bits));
     }
 }
 main().then(() => {
