@@ -1,7 +1,7 @@
 import { compileFunc } from "@ton-community/func-js";
 import fs from "fs";
 
-const task = 3;
+const task = 5;
 async function main() {
     const compileResult = await compileFunc({
         sources: {
@@ -15,6 +15,7 @@ async function main() {
         entryPoints: ['stdlib.fc', `${task}.fc`],
     })
     if (compileResult.status === 'error') throw new Error(compileResult.message)
+    console.log(compileResult.fiftCode);
     fs.writeFile(`./build/${task}.compiled.txt`, compileResult.codeBoc, (e) => { if(e) console.log(e) });
     console.log(`Compiled ${task}.fc`)
 }

@@ -16,6 +16,20 @@
 () recv_internal() {
 }
 
+(int, int) fib(n){
+  if(n == 0){
+    return (0, 1);
+  }
+  (int a, int b) = fib(n / 2);
+  int c = a * (2 * b - a);
+  int d = a * a + b * b;
+  if (n % 2 == 0) {
+        return (c, d);
+    }
+    else {
+        return (d, c + d);
+    }
+}
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   tuple t = empty_tuple();
@@ -34,13 +48,7 @@
     return t;
   }
   else {
-    int cur = 1;
-    int prev = 0;
-    repeat(n - 1){
-      int temp = cur;
-      cur = cur + prev;
-      prev = temp;
-    }
+    (int prev, int cur) = fib(n - 1);
     t~tpush(cur);
     repeat(k - 1){
       int temp = cur;

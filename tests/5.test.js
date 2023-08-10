@@ -23,8 +23,10 @@ async function main() {
     for(let i = 0; i < k; i++){
         assert(re.result[0][i] == fib[n+i]);   
     }
+
     n = 0, k = 255;
     re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
+    console.log(re.result[0]);
     for(let i = 0; i < k; i++){
         assert(re.result[0][i] == fib[n+i]);   
     }
