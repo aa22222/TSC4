@@ -18,22 +18,93 @@
 
 () recv_internal() {
 }
+(slice, (int, int)) read(slice s, int n){
+  int c = s.slice_bits();
+  int re = 0;
+  if(c <= n){
+    n -= c;
+    int bitsRead = c;
+    int re = s~load_uint(c);
+    if(~ s.slice_refs_empty?()){
+      cell t = s~load_ref();
+      s = t.begin_parse();
+      if(s.slice_bits() < n) {
+        n = s.slice_bits();
+      }
+      re <<= n;
+      bitsRead  += n;
 
+      re += s~load_uint(n);
+      return (s, (re, bitsRead) );
+    }
+    return (s, (re, bitsRead) );
+  }
+  else {
+    int re = s~load_uint(n);
+    return (s, (re, n));
+  }
+}
+
+(builder, (tuple)) write(builder b, int x, int n, tuple builders){
+  int bitsR = 1023 - b.builder_bits();
+  if(bitsR < n){
+    n -= bitsR;
+    b~store_uint(x >> n, bitsR);
+    builders = cons(b, builders);
+    x -= (- (1 << n)) & x;
+    return (begin_cell().store_uint(x, n), (builders));
+  }
+  return (b.store_uint(x, n), (builders));
+  
+
+}
 ;; testable
-(cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-  int fn = 0;
-  int vn = 0;
+(cell) find_and_replace(int flag, int value, cell linked_list) method_id {  
+  int n = 0;
   int m = flag;
-  while (m) {
-    m >>= 1;
-    fn += 1;
-  }
-  m = value;
-  while (m) {
-    vn += 1;
+  tuple builders = null();
+  while(m){
+    n += 1;
     m >>= 1;
   }
+  slice s = linked_list.begin_parse();
+  builder re = begin_cell();
+  (int cur, int last) = s~read(n);
+  while(~ s.slice_empty?()){
+ 
+    if(cur == flag){
+      builders = re~write(value, n, builders);
+      (cur, last) = s~read(n);
+    }
+    else {
+      cur <<= 1;
+      (int add, _) = s~read(1);
+      cur += add;
+      if(cur >= 1 << n) {
+        cur -= 1 << n;
+        builders = re~write(1, 1, builders);
+      }
+      else {
+        builders = re~write(0, 1, builders);
+      }
+    }
 
+    
+  }
+  
+  if(cur == flag){
+    builders = re~write(value, n, builders);
+  }
+  else {
+    builders = re~write(cur, last, builders);
+  }
+  cell last = re.end_cell();
+  while(~ builders.null?()){
+    builder b = builders~list_next();
+    last = b.store_ref(last).end_cell();
+  }
+  return last;
+}
   {-
   Read N Bits where N is the length of the flag;
   Check if flag == read;
@@ -61,5 +132,4 @@
      }
   }
   -}
-}
 
