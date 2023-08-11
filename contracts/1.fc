@@ -9,32 +9,23 @@
 () recv_internal() {
 }
 
+global cell re;
 ;; testable
-(cell) helper(int hash, cell tree){
+(int) helper(int hash, cell tree) impure {
   if(hash == tree.cell_hash()) {
-    return tree;
+    re = tree;
+    return - 1;
   }
   slice c = tree.begin_parse();
   repeat(c.slice_refs()){
-    cell next = c~load_ref();
-    cell k = helper(hash, next);
-    if(~ k.cell_null?()) {
-      return k;
+    if(helper(hash, c~load_ref())){
+      return -1;
     }
   }
-  return null();
+  return 0;
 }
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if(hash == tree.cell_hash()) {
-    return tree;
-  }
-  slice c = tree.begin_parse();
-  repeat(c.slice_refs()){
-    cell next = c~load_ref();
-    cell k = helper(hash, next);
-    if(~ k.cell_null?()) {
-      return k;
-    }
-  }
-  return begin_cell().end_cell();
+  re = begin_cell().end_cell();
+  helper(hash, tree);
+  return re;
 }
