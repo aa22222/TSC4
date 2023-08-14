@@ -11,58 +11,51 @@
   to be written 111111111 as inputs, and a linked list of cells, in which the bit
   value of the first cell ends with ...10100001011, and in the ref we have cell that
   starts with 10101000111111...
-  The output shou2ld be a linked list where the first
+  The output should be a linked list where the first
   cell ends with ...10100001111, and the second cell starts with 11111000111111...
 
 -}
-int tlen(tuple t) asm "TLEN";
 
 () recv_internal() {
 }
 
-global int last;
-(slice, int) read(slice s, int n){
+(slice, (int, int)) read(slice s, int n){
   int c = s.slice_bits();
-  int lastv = 0;
-  int b = (n > 1);
   int re = 0;
   if(c <= n){
     n -= c;
-    re = s~load_uint(c);
-    lastv = c;
+    int bitsRead = c;
+    int re = s~load_uint(c);
     if(~ s.slice_refs_empty?()){
       cell t = s~load_ref();
       s = t.begin_parse();
       if(s.slice_bits() < n) {
         n = s.slice_bits();
       }
-      lastv += n;
       re <<= n;
+      bitsRead  += n;
+
       re += s~load_uint(n);
+      return (s, (re, bitsRead) );
     }
+    return (s, (re, bitsRead) );
   }
   else {
-    re = s~load_uint(n);
-    lastv = n;
+    int re = s~load_uint(n);
+    return (s, (re, n));
   }
-  
-  if(b){
-    last = lastv;
-  }
-  return (s, re);
 }
 
-global tuple builders;
-(builder, ()) write(builder b, int x, int n){
+(builder, (tuple)) write(builder b, int x, int n, tuple builders){
   int bitsR = 1023 - b.builder_bits();
   if(bitsR < n){
     n -= bitsR;
     b~store_uint(x >> n, bitsR);
-    builders = builders.tpush(b);
+    builders = cons(b, builders);
     x -= (- (1 << n)) & x;
-    return (begin_cell().store_uint(x, n), ());
+    return (begin_cell().store_uint(x, n), (builders));
   }
-  return (b.store_uint(x, n), ());
+  return (b.store_uint(x, n), (builders));
 }
 
 ;; testable
@@ -80,44 +73,43 @@ global tuple builders;
     m >>= 1;
   }
   
-  builders = empty_tuple();
-  last = 0;
 
-  int big = 1 << n;
+  tuple builders = null();
   slice s = linked_list.begin_parse();
   builder re = begin_cell();
-  int cur = s~read(n);
+  (int cur, int last) = s~read(n);
   while(~ s.slice_empty?()){
+ 
     if(cur == flag){
-      re~write(value, vn);
-      cur = s~read(n);
+      builders = re~write(value, vn, builders);
+      (cur, last) = s~read(n);
     }
     else {
-      cur = (cur << 1) + s~read(1);
-      if(cur >= big) {
-        cur -= big;
-        re~write(1, 1);
+      cur <<= 1;
+      (int add, _) = s~read(1);
+      cur += add;
+      if(cur >= 1 << n) {
+        cur -= 1 << n;
+        builders = re~write(1, 1, builders);
       }
       else {
-        re~write(0, 1);
+        builders = re~write(0, 1, builders);
       }
     }
   }
-
   if(cur == flag){
-    re~write(value, vn);
+    builders = re~write(value, vn, builders);
   }
   else {
-    re~write(cur, last);
+    builders = re~write(cur, last, builders);
   }
 
-  cell ret = re.end_cell();
-  int i = tlen(builders);
-  repeat(i){
-    i -= 1;
-    ret = builders.at(i).store_ref(ret).end_cell();
+  cell last = re.end_cell();
+  while(~ builders.null?()){
+    builder b = builders~list_next();
+    last = b.store_ref(last).end_cell();
   }
-  return ret;
+  return last;
 }
   {-
   Read N Bits where N is the length of the flag;
@@ -146,4 +138,3 @@ global tuple builders;
      }
   }
   -}
-
