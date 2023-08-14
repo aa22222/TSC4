@@ -40,6 +40,8 @@ async function main() {
          stackInt(BigInt('0b' + value)), 
          stackCell(g)
         ]);
+    console.log(re.debugLogs)
+
     let r = re.result[0];
     correct = messageCell(correct);
     console.log(r.bits); console.log(correct.bits);

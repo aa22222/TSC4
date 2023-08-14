@@ -2,7 +2,7 @@
   TASK 2 - Matrix multiplier
   Write the method that multiplies one matrix by another.
   The 1st and 2nd parameter of the function will contain
-  a matrix implemented using tuples (eg: [[1,2], [3,4]]).
+  a matrix implem2ented using tuples (eg: [[1,2], [3,4]]).
   Matrices can be of different sizes, ranging from 4x4
   up to 32x32.
   Matrix can be rectangular where matrixA must to be of size n*m & matrixB of size m*p.
@@ -23,11 +23,11 @@ forall X -> X ind(tuple t, int k) asm (t k) "INDEXVAR";
   int i = 0;
   int j = 0;
   int k = 0;
-  while(i < n){
+  repeat(n){
     tuple curT = empty_tuple();
-    while(j < p){
+    repeat(p){
       int cur = 0;
-      while(k < m){
+      repeat(m){
         cur += matrixA.ind(i).ind(k) * matrixB.ind(k).ind(j);
         k += 1;
       }

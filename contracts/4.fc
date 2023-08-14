@@ -3,15 +3,19 @@
   Implement a Caesar cipher encryption and decryption functions.
   The input is a string (https://docs.ton.org/develop/smart-contracts/guidelines/internal-messages#simple-message-with-comment)
   where the text is encrypted in a cell (after 32bit 00000000 prefix flag), the algorithm rotates the characters and the last ASCII
-  character should go to the beginning. Return new text encoded in cell.
+  character shou2ld go to the beginning. Return new text encoded in cell.
 -}
 
 () recv_internal() {
 }
-(cell) en(int shift, cell text){
+
+(cell) en(int shift, cell text, int b){
   slice c = text.begin_parse();  
-  shift = ((shift % 26) + 26) % 26;
   builder re = begin_cell();
+  if(b){
+    c~skip_bits(32);
+    re~store_uint(0, 32);
+  }
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
     if((65 <= cur) & (cur <= 90)) {
@@ -25,34 +29,15 @@
     re~store_uint(cur, 8);
   }
   if(~ c.slice_refs_empty?()) {
-    cell g = en(shift, c~load_ref());
+    cell g = en(shift, c~load_ref(), 0);
     return re.store_ref(g).end_cell();
   }
   return re.end_cell();
 }
 
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-  slice c = text.begin_parse().skip_bits(32);  
   shift = ((shift % 26) + 26) % 26;
-  builder re = begin_cell().store_uint(0, 32);
-  repeat(c.slice_bits() / 8){
-    int cur = c~load_uint(8);
-    if((65 <= cur) & (cur <= 90)) {
-      cur = 65 + (cur - 65 + shift) % 26;
-    }
-    else {
-      if ((97 <= cur) & (cur <= 122)) {
-        cur = 97 + (cur - 97 + shift) % 26;
-      } 
-    }
-    re~store_uint(cur, 8);
-  }
-  if(~ c.slice_refs_empty?()) {
-    cell g = en(shift, c~load_ref());
-    return re.store_ref(g).end_cell();
-  }
-  return re.end_cell();
-  
+  return en(shift, text, -1);
 }
 
 ;; testable
