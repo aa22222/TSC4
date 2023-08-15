@@ -93,6 +93,7 @@ int tlen(tuple t) asm "TLEN";
       }
     }
   }
+  
   int i  = tlen(builders);
   repeat(i){
     i -= 1;

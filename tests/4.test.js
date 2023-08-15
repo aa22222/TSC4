@@ -55,10 +55,10 @@ async function main() {
         new Cell(),
         { debug: true }
     )
-    const msg = "abcde_+:{\"fghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".repeat(30);
+    const msg = "abcd~(&)(*$&)!@($*--___-^#)(@*!YR(UHSAKLFJefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".repeat(30);
     const cell = beginCell().storeUint(0, 32).storeStringTail(msg).endCell();
     
-    for(let i = -1; i <= 1; i++){
+    for(let i = 25; i <= 25; i++){
         let re = await contract.invokeGetMethod("caesar_cipher_encrypt", [stackInt(i), stackCell(cell)]);
         console.log(readSimpleMessageCell(re.result[0]))
         console.log(caeserCipher(msg, i))
