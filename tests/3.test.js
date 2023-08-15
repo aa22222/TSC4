@@ -28,18 +28,21 @@ async function main() {
         new Cell(),
         { debug: true }
     )
-    let flag = "10101010101011101010", value = "1";
-    let message = (18n).toString(2).repeat(300);
+    let flag = "10", value = "1111";
+    let message = "10010".repeat(300);
     let correct = message.replaceAll(flag, value);
     let g = messageCell(message);
     
     console.log(message.length)
-    let re = await contract.invokeGetMethod("find_and_replace", 
+    let re;
+    
+    re = await contract.invokeGetMethod("find_and_replace", 
         [
          stackInt(BigInt('0b' + flag)), 
          stackInt(BigInt('0b' + value)), 
          stackCell(g)
         ]);
+    // console.log(re.logs)
     console.log(re.debugLogs)
 
     let r = re.result[0];

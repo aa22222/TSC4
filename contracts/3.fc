@@ -15,126 +15,88 @@
   cell ends with ...10100001111, and the second cell starts with 11111000111111...
 
 -}
+int size(int n) asm "UBITSIZE";
+int tlen(tuple t) asm "TLEN";
+(slice, int) begins(slice s, slice s') asm "SDBEGINSXQ"; 
+(builder, (int, int)) store(builder b, int x, int l) asm "STUXRQ" "NULLSWAPIFNOT"; 
+(int) left(builder b) asm "BREMBITS";
 
 () recv_internal() {
 }
 
-(slice, (int, int)) read(slice s, int n){
-  int c = s.slice_bits();
-  int re = 0;
-  if(c <= n){
-    n -= c;
-    int bitsRead = c;
-    int re = s~load_uint(c);
-    if(~ s.slice_refs_empty?()){
-      cell t = s~load_ref();
-      s = t.begin_parse();
-      if(s.slice_bits() < n) {
-        n = s.slice_bits();
-      }
-      re <<= n;
-      bitsRead  += n;
-
-      re += s~load_uint(n);
-      return (s, (re, bitsRead) );
-    }
-    return (s, (re, bitsRead) );
+(tuple, (builder)) write(tuple builders, builder re, int x, int l){
+  (_, int bb) = re~store(x, l);
+  if(bb){
+    int c = re.left();
+    int r = l - c;
+    re~store_uint(x >> r, c);
+    builders~tpush(re);
+    re = begin_cell().store_uint( x & (~ ( - ( 1 << r ))), r);
   }
-  else {
-    int re = s~load_uint(n);
-    return (s, (re, n));
-  }
-}
-
-(builder, (tuple)) write(builder b, int x, int n, tuple builders){
-  int bitsR = 1023 - b.builder_bits();
-  if(bitsR < n){
-    n -= bitsR;
-    b~store_uint(x >> n, bitsR);
-    builders = cons(b, builders);
-    x -= (- (1 << n)) & x;
-    return (begin_cell().store_uint(x, n), (builders));
-  }
-  return (b.store_uint(x, n), (builders));
+  return (builders, re);
 }
 
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {  
-  int n = 0;
-  int vn = 0;
-  int m = flag;
-  while(m){
-    n += 1;
-    m >>= 1;
-  }
-  m = value;
-  while(m){
-    vn += 1;
-    m >>= 1;
-  }
-  
+  int n = size(flag);
+  int vn = size(value);
 
-  tuple builders = null();
+  slice fs = begin_cell().store_uint(flag, n).end_cell().begin_parse();
   slice s = linked_list.begin_parse();
+  tuple builders = empty_tuple();
   builder re = begin_cell();
-  (int cur, int last) = s~read(n);
-  while(~ s.slice_empty?()){
- 
-    if(cur == flag){
-      builders = re~write(value, vn, builders);
-      (cur, last) = s~read(n);
+
+  int b = 1;
+  while(b){
+    if(s~begins(fs)){ 
+      re = builders~write(re, value, vn);
     }
     else {
-      cur <<= 1;
-      (int add, _) = s~read(1);
-      cur += add;
-      if(cur >= 1 << n) {
-        cur -= 1 << n;
-        builders = re~write(1, 1, builders);
+      int g = s.slice_bits();
+      if(g < n) {
+        if(s.slice_refs_empty?()){
+          re = builders~write(re, s~load_uint(g), g);
+          b = 0;
+        }
+        else {
+          slice gg = s.preload_ref().begin_parse();
+          if(g == 0){
+            s = gg;
+          }
+          else {
+            int ll = gg.slice_bits();
+            if(ll + g < n){
+              re = builders~write(re, (s.preload_uint(g) << ll) + gg.preload_uint(ll), g + ll);
+              b = 0;
+            } 
+            else {
+              int k = (s.preload_uint(g) << (n - g)) + gg.preload_uint(n - g);
+              if(k == flag) {
+                re = builders~write(re, value, vn);
+                s = gg.skip_bits(n - g);
+              }
+              else {
+                re = builders~write(re, s~load_uint(1), 1);
+              }
+            }
+          }
+          
+        }
       }
       else {
-        builders = re~write(0, 1, builders);
+        int lm = s~load_uint(1);
+        (_, int bb) = re~store(lm, 1);
+        if(bb){
+          builders~tpush(re);
+          re = begin_cell().store_uint(lm, 1);
+        }
       }
     }
   }
-  if(cur == flag){
-    builders = re~write(value, vn, builders);
+  int i  = tlen(builders);
+  repeat(i){
+    i -= 1;
+    re = builders.at(i).store_ref(re.end_cell());
   }
-  else {
-    builders = re~write(cur, last, builders);
-  }
-
-  cell last = re.end_cell();
-  while(~ builders.null?()){
-    builder b = builders~list_next();
-    last = b.store_ref(last).end_cell();
-  }
-  return last;
+  return re.end_cell();
 }
-  {-
-  Read N Bits where N is the length of the flag;
-  Check if flag == read;
-  Basically leftshift the input then add the new bit;
-  if flag == read, then flag = read new N bits;
-
-  int n = length(flag);
-  builder re = begin_cell(); // idk if new cell starts auto or if i have to manually make linked list
-  slice list = linked_list.begin_parse();
-  int cur = list~load_uint(n);
-  while(! at_end()){
-     if(cur == flag){
-      re.store(value, length(value));
-      cur = list~load_uint(n);
-     }
-     else{
-      re <<= 1;
-      if(re >= 2 ** n) // if largest bit is on
-        re -= 2 ** n
-        re.store(1, 1)
-      else 
-        re.store(0, 1);        
-      
-      re += list~load_uint(1);
-     }
-  }
-  -}
