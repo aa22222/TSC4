@@ -8,6 +8,7 @@
 
 () recv_internal() {
 }
+global int lit, big;
 
 (cell) en(int shift, cell text, int b){
   slice c = text.begin_parse();  
@@ -18,23 +19,30 @@
   }
   repeat(c.slice_bits() / 8){
     int cur = c~load_uint(8);
-    if( ( cur < 65 ) | ( cur > 122 ) | ( ( cur > 90 ) & ( cur < 97 ) ) ) {
-      re~store_uint(cur, 8);
+    if((cur > 64) & (cur < 91)){
+      re~store_uint(65 + (cur + lit) % 26, 8);
     }
     else {
-      int mn = 1 + (cur & 96);
-      re~store_uint(mn + (cur - mn + shift) % 26, 8);
+      if((cur > 96) & (cur < 123)){
+        re~store_uint(97 + (cur + big) % 26, 8);
+      }
+      else {
+        re~store_uint(cur, 8);
+      }
     }
   }
+
   if(~ c.slice_refs_empty?()) {
-    cell g = en(shift, c~load_ref(), 0);
-    return re.store_ref(g).end_cell();
+    return re.store_ref(en(shift, c~load_ref(), 0)).end_cell();
   }
   return re.end_cell();
 }
 
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   shift %= 26;
+  lit = shift - 65;
+  big = shift - 97;
+
   return en(shift, text, -1);
 }
 
