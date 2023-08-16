@@ -9,4 +9,4 @@ function main(task) {
     }   
     console.log(s);
 }
-main("asm/5.fift");
+main("asm/1.fift");

@@ -1,0 +1,27 @@
+NULL
+s2 XCHG0
+1 SETGLOB
+<{
+    DUP ISNULL
+    IFJMP:<{
+        NEWC ENDC
+        1 INT RET
+    }>
+    DUP
+    HASHCU
+    1 GETGLOB
+    EQUAL
+    IFJMP:<{
+        1 INT RET
+    }>
+    CTOS
+    DUP
+    SREFS
+    REPEAT:<{
+        LDREF
+    }>
+    DROP
+    0 INT
+}> CONT
+UNTIL
+<{ }> CONT 1 JMPXARGS

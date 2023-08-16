@@ -9,30 +9,8 @@
 () recv_internal() {
 }
 
-{-
-  DFS IS STACK BASED UFCING RETAD
-  JUUST USE THE ASM FUNCTIONS AND JUS FUKCING DO DFS DIRECTLY ON TEH STACK 
-  WTF  
--}
+(cell) de(int hash, cell tree) asm "NULL s2 XCHG0 1 SETGLOB <{ DUP ISNULL IFJMP:<{ NEWC ENDC 1 INT RET }> DUP HASHCU 1 GETGLOB EQUAL IFJMP:<{ 1 INT RET }> CTOS DUP SREFS REPEAT:<{ LDREF }> DROP 0 INT }> CONT UNTIL <{ }> CONT 1 JMPXARGS";
 
-global cell re;
-;; testable
-(int) helper(int hash, cell tree) impure {
-  if(hash == tree.cell_hash()) {
-    re = tree;
-    return -1;
-  }
-  slice c = tree.begin_parse();
-  repeat(c.slice_refs()){
-    if(helper(hash, c~load_ref())){
-      return -1;
-    }
-  }
-  return 0;
-}
 (cell) find_branch_by_hash(int hash, cell tree) method_id {
-  if(helper(hash, tree)){
-    return re;
-  }
-  return begin_cell().end_cell();
+  return de(hash, tree);
 }
