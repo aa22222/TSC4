@@ -27,6 +27,7 @@ int tlen(tuple t) asm "TLEN";
 (tuple, (builder)) write(tuple builders, builder re, int x, int l){
   (_, int bb) = re~store(x, l);
   if(bb){
+    builders~tpush(re);
     re = begin_cell().store_uint( x, l );
   }
   return (builders, re);
