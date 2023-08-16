@@ -16,47 +16,11 @@
 () recv_internal() {
 }
 
-(int, int) fib(n){
-  if(n == 0){
-    return (0, 1);
-  }
-  (int a, int b) = fib(n / 2);
-  int c = a * (2 * b - a);
-  int d = a * a + b * b;
-  if (n % 2 == 0) {
-        return (c, d);
-    }
-    else {
-        return (d, c + d);
-    }
-}
+(tuple) ans(int n, int k) asm "DUP 1 SETGLOB DUP2 0 EQINT IFJMP:<{ 3 BLKDROP NIL }> 0 EQINT IFJMP:<{ DUP 1 EQINT IFJMP:<{ 2DROP ZERO SINGLE RETALT }> ZERO ONE ROT -2 ADDCONST REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR SWAP DROP }> SWAP ZERO ONE ROT -1 ADDCONST REPEAT:<{ TUCK ADD }> ROT -1 ADDCONST REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR SWAP DROP";
+
+
 ;; testable
-(tuple) fibonacci_sequence (int n, int k) method_id {
-  tuple t = empty_tuple();
-  if(k == 0){
-    return t;
-  }
-  if(n == 0){
-    int cur = 0;
-    int next = 1;
-    repeat(k){
-      t~tpush(cur);
-      int temp = next;
-      next = cur + next;
-      cur = temp;
-    }
-    return t;
-  }
-  else {
-    (int prev, int cur) = fib(n - 1);
-    t~tpush(cur);
-    repeat(k - 1){
-      int temp = cur;
-      cur = prev + cur;
-      prev = temp;
-      t~tpush(cur);
-    }
-    return t;
-  }
+(tuple) fibonacci_sequence(int n, int k) method_id {
+  return ans(n, k);
 }
 

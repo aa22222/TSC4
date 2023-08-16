@@ -9,6 +9,12 @@
 () recv_internal() {
 }
 
+{-
+  DFS IS STACK BASED UFCING RETAD
+  JUUST USE THE ASM FUNCTIONS AND JUS FUKCING DO DFS DIRECTLY ON TEH STACK 
+  WTF  
+-}
+
 global cell re;
 ;; testable
 (int) helper(int hash, cell tree) impure {

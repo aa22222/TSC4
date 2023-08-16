@@ -1,0 +1,11 @@
+() recv_internal() {  
+}
+
+(int) add(int a, int b) asm "ADD";
+int f(int a, int b) method_id {
+    if(a == 1) {
+        return 10;
+    }
+    int b = a * 4;
+    return b + 12;
+}
