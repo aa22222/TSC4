@@ -26,13 +26,16 @@ async function test(n, k){
 }
 
 async function main() {
-    await test(123, 0);
-    await test(13, 0);
-    await test(323, 0);
+    await test(253, 2);
+    await test(203, 23);
+    await test(153, 3);
     await test(1, 3);
-    await test(115, 255);
+    await test(55, 255);
     await test(120, 23);
-    await test(0, 123);
+    await test(302, 3);
+    await test(300, 3);
+    await test(350, 3);
+    await test(351, 3);
 }
 main().then(() => {
     console.log("✅ All Tests Passed")
