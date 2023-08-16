@@ -1,44 +1,12 @@
 DUP 1 SETGLOB
-DUP2
-0 EQINT
-IFJMP:<{
-    3 BLKDROP
-    NIL
-}>
-0 EQINT
-IFJMP:<{
-    DUP
-    1 EQINT
-    IFJMP:<{
-        2DROP
-        ZERO SINGLE
-        RETALT
-    }>
-    ZERO ONE
-    ROT
-    -2 ADDCONST
-    REPEAT:<{
-        DUP2
-        ADD
-    }>
-    1 GETGLOB
-    TUPLEVAR
-    SWAP DROP
-}>
-SWAP
-ZERO ONE
-ROT
--1 ADDCONST
-REPEAT:<{
-    TUCK
-    ADD
-}>
-ROT
--1 ADDCONST
+ADD 
+-2 ADDCONST
 REPEAT:<{
     DUP2
     ADD
 }>
 1 GETGLOB
 TUPLEVAR
-SWAP DROP
+1 JMPXARGS:<{
+    RET
+}>

@@ -19,6 +19,7 @@ for(let i = 0; i < 400; i++){
 async function test(n, k){
     let re = await contract.invokeGetMethod('fibonacci_sequence', [stackInt(n), stackInt(k)]);
     console.log(re.gas_consumed);
+    if(re.type != "success") console.log(re.logs)
     for(let i = 0; i < k; i++){
         assert(re.result[0][i] == fib[i + n]);
     }
