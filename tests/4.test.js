@@ -49,9 +49,7 @@ function caeserCipher(str, amount) {
 };
 const task = 4;
 async function main() {
-    let code;
-    code = fs.readFileSync(`../build/${task}.compiled.txt`).toString();
-    code = "te6ccgEBCAEApwABFP8A9KQT9LzyyAsBAgFiAgMCAs8EBQIBSAYHAAEgAL0AdDIApmAINchcFjLHwHeINdJqwKONdMHIcJAIsFbsJ34QRKggBqpCKZBWMsHjhohwmAiwXuwnfhCEqCAGqkIpmFYyweTAssH4uIB5CDHArOZ1DAScPABAczJ4DAxyYAAruqHwGAGqkIIKa/+GEgpp/4YgF/8AGAAZuR3AGjAYIBKh/tQ9iA==";
+    let code = fs.readFileSync(`../build/${task}.compiled.txt`).toString();
     const contract = await SmartContract.fromCell(
         Cell.fromBoc(Buffer.from(code, 'base64'))[0],
         new Cell(),
@@ -59,17 +57,15 @@ async function main() {
     )
     const msg = "abcd~(&)(*$&)!@($*--___-^#)(@*!YR(UHSAKLFJefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".repeat(100);
     const cell = beginCell().storeUint(0, 32).storeStringTail(msg).endCell();
-    
     for(let i = 25; i <= 25; i++){
         let re = await contract.invokeGetMethod("caesar_cipher_encrypt", [stackInt(i), stackCell(cell)]);
+
         assert(readSimpleMessageCell(re.result[0]) == caeserCipher(msg, i));
         let re2 = await contract.invokeGetMethod("caesar_cipher_decrypt", [stackInt(i), stackCell(simpleMessageCell(caeserCipher(msg, i)))]);
+        
         assert(readSimpleMessageCell(re2.result[0]) == msg);
         console.log(i.toString() + " - " + (re2.gas_consumed + re.gas_consumed));
     }
-    // console.log(re.logs);
-    // printLogs(re.debugLogs);
-    // console.log("Gas Consumed: %d", re.gas_consumed);
 }
 main().then(() => {
     console.log("✅ All Tests Passed")

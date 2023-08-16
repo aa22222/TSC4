@@ -17,7 +17,7 @@
 () recv_internal() {
 }
 
-(tuple) ans(int n, int k) asm "DUP 1 SETGLOB ADD -2 ADDCONST ZERO ONE ROT REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR 1 INT ONLYTOPX";
+(tuple) ans(int a, int b, int n, int k) asm "DUP 1 SETGLOB ADD -2 ADDCONST REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR 1 INT ONLYTOPX";
 (tuple) sing(int n) asm "SINGLE";
 
 ;; testable
@@ -28,7 +28,23 @@
   if(n + k == 1) {
     return sing(0);
   }
-
-  return ans(n, k);
+  int a = 0;
+  int b = 1;
+  if(n > 300){
+    a = 222232244629420445529739893461909967206666939096499764990979600 ;
+    b = 359579325206583560961765665172189099052367214309267232255589801;
+    n -= 300;
+  }
+  if(n > 200){
+    a = 280571172992510140037611932413038677189525;
+    b = 453973694165307953197296969697410619233826;
+    n -= 200;
+  }
+  if(n > 100){
+    a = 354224848179261915075;
+    b = 573147844013817084101;
+    n -= 100;
+  }
+  return ans(a, b, n, k);
 }
 
