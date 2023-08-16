@@ -49,7 +49,9 @@ function caeserCipher(str, amount) {
 };
 const task = 4;
 async function main() {
-    const code = fs.readFileSync(`../build/${task}.compiled.txt`).toString();
+    let code;
+    code = fs.readFileSync(`../build/${task}.compiled.txt`).toString();
+    code = "te6ccgEBCAEApwABFP8A9KQT9LzyyAsBAgFiAgMCAs8EBQIBSAYHAAEgAL0AdDIApmAINchcFjLHwHeINdJqwKONdMHIcJAIsFbsJ34QRKggBqpCKZBWMsHjhohwmAiwXuwnfhCEqCAGqkIpmFYyweTAssH4uIB5CDHArOZ1DAScPABAczJ4DAxyYAAruqHwGAGqkIIKa/+GEgpp/4YgF/8AGAAZuR3AGjAYIBKh/tQ9iA==";
     const contract = await SmartContract.fromCell(
         Cell.fromBoc(Buffer.from(code, 'base64'))[0],
         new Cell(),
