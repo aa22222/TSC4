@@ -35,7 +35,12 @@ int tlen(tuple t) asm "TLEN";
   }
   return (builders, re);
 }
+{-
+  split each cell into 512 and 511 bits
+  use s~begins()
+  if length is less than blah, concatenate them, oui
 
+-}
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {  
   int n = size(flag);

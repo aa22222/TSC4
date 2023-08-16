@@ -17,7 +17,7 @@
 () recv_internal() {
 }
 
-(tuple) ans(int n, int k) asm "DUP 1 SETGLOB ADD -2 ADDCONST ZERO ONE ROT REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR CONT:<{ }> 1 JMPXARGS";
+(tuple) ans(int n, int k) asm "DUP 1 SETGLOB ADD -2 ADDCONST ZERO ONE ROT REPEAT:<{ DUP2 ADD }> 1 GETGLOB TUPLEVAR 1 INT ONLYTOPX";
 (tuple) sing(int n) asm "SINGLE";
 
 ;; testable
@@ -25,7 +25,7 @@
   if(k == 0) {
     return empty_tuple();
   }
-  if((n == 0) & (k == 1)) {
+  if(n + k == 1) {
     return sing(0);
   }
 
