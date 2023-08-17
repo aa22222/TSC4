@@ -9,15 +9,15 @@
 () recv_internal() {
 }
 (slice) char(slice alpha, int ind) asm "8 INT SDSUBSTR";
-(slice) tes() asm "x{000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
-(slice) f1() asm "x{000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
-(slice) f2() asm "x{5B5C5D5E5F60} SLICE";
-(slice) f3() asm "x{7B7C7D7E} SLICE";
 
+(slice) f1() asm "x{0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
+(slice) f2() asm "x{5B5C5D5E5F60} SLICE";
+(slice) f3() asm "x{7B7C7D7E7F} SLICE";
+(int) left(builder b) asm "BREMBITS";
 global slice alpha;
 (cell) en(int shift, builder re, slice text){
   repeat(text.slice_bits() / 8){
-    int cur = text~load_uint(8) * 8;
+    int cur = (text~load_uint(8) - 1) * 8;
     slice k = char(alpha, cur);
     re = re.store_slice(k);
   }
