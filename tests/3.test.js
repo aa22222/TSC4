@@ -43,7 +43,7 @@ async function main() {
          stackCell(g)
         ]);
     // console.log(re.logs)
-    console.log(re.debugLogs)
+    console.log(re.gas_consumed)
 
     let r = re.result[0];
     correct = messageCell(correct);

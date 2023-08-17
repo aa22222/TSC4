@@ -5,4 +5,4 @@ function main(task) {
     s = s.replaceAll("    ", "").replaceAll("\r\n", " ");
     console.log(s);
 }
-main("asm/4.fift");
+main("asm/1.fift");

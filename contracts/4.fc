@@ -8,10 +8,53 @@
 
 () recv_internal() {
 }
-(cell) en(cell text, int shift) asm "DUP -65 ADDCONST 1 SETGLOB -97 ADDCONST 2 SETGLOB  NEWC 32 INT STZEROES SWAP CTOS 32 INT SDSKIPFIRST NULL -ROT UNTIL:<{ DUP SBITS 8 INT DIV REPEAT:<{ 8 LDU  -ROT DUP 64 GTINT OVER 91 LESSINT AND IFJMP:<{ 1 GETGLOB ADD 26 INT MOD 65 ADDCONST SWAP 8 STU SWAP }> DUP 96 GTINT OVER 123 LESSINT AND IFJMP:<{ 2 GETGLOB ADD 26 INT MOD 97 ADDCONST SWAP 8 STU SWAP }> SWAP 8 STU SWAP }> DUP SREFS IFJMP:<{ LDREF  DROP CTOS NEWC SWAP 0 INT }> DROP 1 INT }> WHILE:<{ s1 PUSH ISNULL NOT }>DO<{ ENDC SWAP STREF }> ENDC SWAP DROP";
+(slice) char(slice alpha, int ind) asm "8 INT SDSUBSTR";
+(slice) tes() asm "x{000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
+(slice) f1() asm "x{000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
+(slice) f2() asm "x{5B5C5D5E5F60} SLICE";
+(slice) f3() asm "x{7B7C7D7E} SLICE";
+
+global slice alpha;
+(cell) en(int shift, builder re, slice text){
+  repeat(text.slice_bits() / 8){
+    int cur = text~load_uint(8) * 8;
+    slice k = char(alpha, cur);
+    re = re.store_slice(k);
+  }
+  if(text.slice_refs_empty?()){
+    return re.end_cell();
+  }
+  return re.store_ref(en(shift, begin_cell(), text.preload_ref().begin_parse())).end_cell();
+}
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   shift %= 26;
-  return en(text, shift);
+  builder sd = begin_cell();
+  sd = sd.store_slice(f1());
+  int g = shift + 65;
+  repeat(26 - shift){
+    sd~store_uint(g, 8);
+    g += 1;
+  }
+  g = 65;
+  repeat(shift){
+    sd~store_uint(g, 8);
+    g += 1;
+  }
+  sd = sd.store_slice(f2());
+  g = shift + 97;
+  repeat(26 - shift){
+    sd~store_uint(g, 8);
+    g += 1;
+  }
+  g = 97;
+  repeat(shift){
+    sd~store_uint(g, 8);
+    g += 1;
+  }
+  sd = sd.store_slice(f3());
+  alpha = sd.end_cell().begin_parse();
+  builder re = begin_cell().store_uint(0, 32);
+  return en(shift, re, text.begin_parse().skip_bits(32));
 }
 
 ;; testable
