@@ -60,6 +60,9 @@ async function main() {
     for(let i = 25; i <= 25; i++){
         let re = await contract.invokeGetMethod("caesar_cipher_encrypt", [stackInt(i), stackCell(cell)]);
         console.log(re.debugLogs);
+        // console.log(re.logs)
+        console.log(re.result[0])
+        console.log(readSimpleMessageCell(re.result[0]))
         assert(readSimpleMessageCell(re.result[0]) == caeserCipher(msg, i));
         let re2 = await contract.invokeGetMethod("caesar_cipher_decrypt", [stackInt(i), stackCell(simpleMessageCell(caeserCipher(msg, i)))]);
         

@@ -8,18 +8,18 @@
 
 () recv_internal() {
 }
-(slice) char(slice alpha, int ind) asm "8 INT SDSUBSTR";
+(slice) char(slice alpha, int ind) asm "7 INT SDSUBSTR";
 
-(slice) f1() asm "x{0102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
-(slice) f2() asm "x{5B5C5D5E5F60} SLICE";
-(slice) f3() asm "x{7B7C7D7E7F} SLICE";
+(slice) f1() asm "x{00041030814307102450b183470f20449132854b173064d1b3874f1f4085123489532750a552b58b572f60c593368d5b3770e5d3b78f5f3f} SLICE";
+(slice) f2() asm "b{101101110111001011101101111010111111100000} SLICE";
+(slice) f3() asm "b{11110111111100111110111111101111111} SLICE";
 (int) left(builder b) asm "BREMBITS";
 global slice alpha;
 (cell) en(int shift, builder re, slice text){
   repeat(text.slice_bits() / 8){
-    int cur = (text~load_uint(8) - 1) * 8;
+    int cur = text~load_uint(8) * 7;
     slice k = char(alpha, cur);
-    re = re.store_slice(k);
+    re = re.store_uint(k.preload_uint(7), 8);
   }
   if(text.slice_refs_empty?()){
     return re.end_cell();
@@ -29,29 +29,34 @@ global slice alpha;
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   shift %= 26;
   builder sd = begin_cell();
-  sd = sd.store_slice(f1());
+  sd = sd.store_slice(f1()).store_uint(64, 7);
   int g = shift + 65;
   repeat(26 - shift){
-    sd~store_uint(g, 8);
+    sd~store_uint(g, 7);
     g += 1;
   }
+  
   g = 65;
   repeat(shift){
-    sd~store_uint(g, 8);
+    sd~store_uint(g, 7);
     g += 1;
   }
+
   sd = sd.store_slice(f2());
+
   g = shift + 97;
   repeat(26 - shift){
-    sd~store_uint(g, 8);
+    sd~store_uint(g, 7);
     g += 1;
   }
   g = 97;
   repeat(shift){
-    sd~store_uint(g, 8);
+    sd~store_uint(g, 7);
     g += 1;
   }
+
   sd = sd.store_slice(f3());
+
   alpha = sd.end_cell().begin_parse();
   builder re = begin_cell().store_uint(0, 32);
   return en(shift, re, text.begin_parse().skip_bits(32));
