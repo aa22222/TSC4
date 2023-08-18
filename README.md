@@ -1,8 +1,6 @@
-# TSC4
-TON Smart Challenge 4 Submission
-
-Final Score - 28.658
-
+# TON Smart Challenge 4 Submission
+### Final Score - 28.658
+```
 Problem #1:
 Compiled: true
 Passed Tests: true
@@ -32,3 +30,4 @@ Compiled: true
 Passed Tests: true
 GasValue: 214378
 Points: 5.9000730162442645
+``````
