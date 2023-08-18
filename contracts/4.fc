@@ -8,55 +8,53 @@
 
 () recv_internal() {
 }
-(slice) char(slice alpha, int ind) asm "8 INT SDSUBSTR";
-(slice) f1() asm "x{000102030405060708090A0B0C0D0E0F101112131415161718191A1B1C1D1E1F202122232425262728292A2B2C2D2E2F303132333435363738393A3B3C3D3E3F40} SLICE";
-(slice) f2() asm "x{5B5C5D5E5F60} SLICE";
-(int) left() asm "BREMBITS";
-global slice alpha;
-(cell) en(int shift, builder re, slice text){
+
+(cell) en(int shift, builder re, slice text, tuple t){
   repeat(text.slice_bits() / 8){
     int cur = text~load_uint(8);
-    if(cur <= 122){
-      slice k = char(alpha, cur * 8);
-      re = re.store_slice(k);
-    }
-    else {
-      re~store_uint(cur, 8);
-    }
+    re~store_uint(t.at(cur), 8);
   }
   if(text.slice_refs_empty?()){
     return re.end_cell();
   }
-  return re.store_ref(en(shift, begin_cell(), text.preload_ref().begin_parse())).end_cell();
+  return re.store_ref(en(shift, begin_cell(), text.preload_ref().begin_parse(), t)).end_cell();
 }
+
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
   shift %= 26;
-  builder sd = begin_cell();
-  sd = sd.store_slice(f1());
-  int g = shift + 65;
+  tuple t = empty_tuple();
+  int i = 0;
+  repeat(65){
+    t~tpush(i);
+    i += 1;
+  }
   repeat(26 - shift){
-    sd~store_uint(g, 8);
-    g += 1;
+    t~tpush(i + shift);
+    i += 1;
   }
-  g = 65;
   repeat(shift){
-    sd~store_uint(g, 8);
-    g += 1;
+    t~tpush(i - 26 + shift);
+    i += 1;
   }
-  sd = sd.store_slice(f2());
-  g = shift + 97;
+  repeat(6){
+    t~tpush(i);
+    i += 1;
+  }
   repeat(26 - shift){
-    sd~store_uint(g, 8);
-    g += 1;
+    t~tpush(i + shift);
+    i += 1;
   }
-  g = 97;
   repeat(shift){
-    sd~store_uint(g, 8);
-    g += 1;
+    t~tpush(i - 26 + shift);
+    i += 1;
   }
-  alpha = sd.end_cell().begin_parse();
+  repeat(132){
+    t~tpush(i);
+    i += 1;
+  }
+  
   builder re = begin_cell().store_uint(0, 32);
-  return en(shift, re, text.begin_parse().skip_bits(32));
+  return en(shift, re, text.begin_parse().skip_bits(32), t);
 }
 
 ;; testable
